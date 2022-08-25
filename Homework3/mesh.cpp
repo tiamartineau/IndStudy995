@@ -1,22 +1,21 @@
-#include <vector>
-#include <iostream>
 #include "defs.hpp"
 
-Mesh::Mesh(int dimension, std::vector<int> extents){
-  dims=dimension;
-  ext=extents;
+Mesh::Mesh(vector<int>numofextents){
+  dim=numofextents.size();
+  size=numofextents;
   totalpoints=1;
-  for(int i=0;i<dims;i++){
-      totalpoints *= ext[i];
-    }
+  for (int i=0; i<numofextents.size();i++)
+    totalpoints *= numofextents[i];
 }
 
-int Mesh::dimensions(void){
-  return dims;
+int Mesh::GetDim(){
+  return dim;
 }
-std::vector<int> Mesh::extents(void){
-  return ext;
+
+vector <int> Mesh::GetExtents(){
+  return size;
 }
-int Mesh::total_points(void){
+
+int Mesh::total_points(){
   return totalpoints;
 }

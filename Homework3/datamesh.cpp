@@ -1,64 +1,101 @@
 #include "defs.hpp"
 #include <assert.h>
+//done a little bit more efficiently than in previous assignments...
+//kept many of same function and variable names from previous assignments
+//DataMesh constructor
 
-template<typename T>  
-DataMesh<T>::DataMesh(int dimensions, std::vector<int> extents)
-:Mesh(dimensions,extents)
+template <typename T>
+DataMesh<T>::DataMesh(vector <int> numofextents, T f): Mesh(numofextents){
+  int totalpoint=total_points();
+  for (int i=0; i<totalpoint; i++){
+    mesh_data.push_back(f);
+  }
+}
+
+template <typename T>
+DataMesh<T>::DataMesh(vector <int> numofextents): Mesh(numofextents){
+  int totalpoint=total_points();
+  for (int i=0; i<totalpoint; i++){
+    mesh_data.push_back(0);
+  }
+}
+
+//Deconstructor
+template <typename T>
+DataMesh<T>::~DataMesh(){}
+
+//check to see if DataMesh and new data are the same size
+//overloads + operator
+template <typename T>
+DataMesh<T> DataMesh<T>::operator +(const DataMesh<T>& a)
 {
-  int product = 1;
-  for(int i=0;i<extents.size();i++){
-      product *= extents[i];
-    }
-  mesh_data.resize(product);
-}
+  vector<int> size=this->GetExtents();
+  if (a.mesh_data.size() != this->mesh_data.size()){
+    cout << "DataMesh and new data not same size. :-(" << endl;
+    exit(1);
+  }
 
-//comments/definitions provided in defs_hpp if names are not self-explanatory enough!
-template<typename T>  
-int DataMesh<T>::get_all_points(void){
-  return mesh_data.size();
-}
-
-template<typename T>  
-void DataMesh<T>::set_values(std::vector<T> fill_data){
-  if (fill_data.size() != mesh_data.size()){
-    std::cout << "DataMesh and new data not same size" << std::endl;
+  DataMesh<T> c(size);
+  if(typeid(T)== typeid(bool)) {
+    for (int i = 0; i < a.mesh_data.size(); i++) {
+      c.mesh_data[i] = a.mesh_data[i]*this->mesh_data[i];
     }
+  }
   else{
-      for(int i=0;i<mesh_data.size();i++){
-	  mesh_data[i] = fill_data[i];
-	}
+    for (int i = 0; i < a.mesh_data.size(); i++) {
+      c.mesh_data[i] = a.mesh_data[i] + this->mesh_data[i];
     }
+  }
+  return c;
 }
 
-template<typename T>  
-std::vector<T> DataMesh<T>::retrieve_values(void){
-  return mesh_data;
-}
-
-template<typename T>  
-void DataMesh<T>::set_single_value(int coordinate, T data_point){
-  mesh_data[coordinate]=data_point;
-}
-
-template<typename T>  
-T DataMesh<T>::get_single_value(int coordinate){
-  return mesh_data[coordinate];
-}
-
-template<typename T>  
-void DataMesh<T>::print_datamesh(void){
-  int coord;
-  for(int i=0;i<ext[0];i++){
-      for(int j=0;j<ext[1];j++){
-	  for(int k=0;k<ext[2];k++){
-	      coord = k*(ext[0]*ext[1])+j*ext[0]+i;
-	      std::cout << mesh_data[coord] << " ";
-	    }
-	  std::cout << std::endl;
-	}
-      std::cout << std::endl;
+//check to see if DataMesh and new data are the same size
+//overloads *= operator, for multiplying <int/double> types                                     
+// by scalar of the same type.
+template <typename T>
+void DataMesh<T>::operator +=(const DataMesh<T>& b){
+  if (b.mesh_data.size() != this->mesh_data.size()){
+    cout << "DataMesh and new data not same size. :-(" << endl;
+    exit(1);
+  }
+  if(typeid(T)== typeid(bool)){
+    for (int i = 0; i < mesh_data.size(); i++) {
+      this->mesh_data[i] = this->mesh_data[i] * b.mesh_data[i];
     }
+  }
+  else{
+    for (int i=0; i<mesh_data.size(); i++){
+      this->mesh_data[i]=this->mesh_data[i]+b.mesh_data[i];
+    }
+  }
 }
 
-template class DataMesh<int>;
-template class DataMesh<double>;
+//same as above, for * operator
+template <typename T>
+void DataMesh<T>::operator * (const T a){
+  for (int i=0; i<mesh_data.size(); i++){
+    mesh_data[i]=a*mesh_data[i];
+  }
+}
+//another check
+template <typename T>
+void DataMesh<T>::set_single_value(const int i, const T value){
+  if (i>=mesh_data.size()){
+    cout << "Placement of point expands beyond the size of the mesh data. :-(" << mesh_data.size() << endl;
+    exit(1);
+  } else {
+    mesh_data[i]=value;
+  }
+}
+
+template <typename T>
+T DataMesh<T>::get_single_value (const int i){
+  return mesh_data[i];
+}
+
+template <typename T>
+void DataMesh<T>::Print(){
+  for (int i=0; i<mesh_data.size(); i++){
+    cout << "i=" << i << ", value=" << mesh_data[i] << endl;
+  }
+}
