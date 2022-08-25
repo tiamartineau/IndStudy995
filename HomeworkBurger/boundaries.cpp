@@ -10,12 +10,12 @@ MoveBounds::MoveBounds(const vector<int> numofextents, const int Bounds){
   dim=numofextents.size();
   //internal grid length below
   extents_within=numofextents;
-  Npnts=1;
+  totalpoints=1;
   //I absolutely could have named these better, but, ... it works
   Boundss=Bounds;
   int stepss=1;
   for (int i=0; i<dim;i++){
-    Npnts*=(numofextents[i]+2*Bounds);
+    totalpoints*=(numofextents[i]+2*Bounds);
     steps.push_back(stepss);
     stepss*=(numofextents[i]+2*Bounds);
   }
@@ -26,7 +26,7 @@ void MoveBounds::GeneratePeriodicB(const DataMesh<bool>& B, const DataMesh<doubl
   vector <int> coords(dim);
   int l, step;
   double value=0;
-  for (int i=0; i<Npnts; i++){
+  for (int i=0; i<totalpoints; i++){
     //test to see if the points are within the boundaries
     if (B.get_single_value(i)==1){
       l=i;
